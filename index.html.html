@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Quiet Feed — Client mail avec filtre intelligent</title>
+<style>
+  :root{
+    --bg: #F5F6F8;
+    --panel: #FFFFFF;
+    --border: #E2E5EA;
+    --text: #1B2430;
+    --text-soft: #5B6675;
+    --text-faint: #8B93A1;
+    --navy: #14324F;
+    --navy-soft: #1F4468;
+    --teal: #3E7C74;
+    --teal-bg: #EAF3F1;
+    --amber: #B8853B;
+    --amber-bg: #FBF3E7;
+    --brick: #A6394A;
+    --brick-bg: #F9EBEC;
+    --unread-dot: #2C6FB0;
+    --urgent: #C4501E;
+    --urgent-bg: #FCEEE4;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;}
+  body{
+    font-family: "Inter", -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+  }
+  .app{
+    display:flex;
+    flex:1;
+    min-height: 640px;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width: 232px;
+    flex-shrink:0;
+    background: var(--navy);
+    color: #E9EEF3;
+    display:flex;
+    flex-direction:column;
+    padding: 18px 14px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding: 4px 6px 12px 6px;
+    color:#fff;
+  }
+  .brand-main{
+    font-weight:650;
+    font-size:15px;
+    letter-spacing:0.01em;
+    line-height:1.2;
+  }
+  .brand-sub{
+    font-size:11px;
+    color:#93A3B4;
+    line-height:1.3;
+  }
+  .mit-badge{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding: 0 6px 20px 6px;
+    font-size:11px;
+    color:#93A3B4;
+  }
+  .mit-mark{
+    background:#A31F34;
+    color:#fff;
+    font-weight:700;
+    font-size:10px;
+    letter-spacing:0.03em;
+    padding:3px 6px;
+    border-radius:3px;
+    flex-shrink:0;
+  }
+  .brand svg{flex-shrink:0;}
+  .compose-btn{
+    background:#fff;
+    color: var(--navy);
+    border:none;
+    border-radius:6px;
+    padding:10px 14px;
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+    margin-bottom:22px;
+    text-align:left;
+  }
+  .compose-btn:hover{background:#EDF1F5;}
+  .nav-section-label{
+    font-size:11.5px;
+    color:#93A3B4;
+    padding: 6px 10px 6px;
+    font-weight:500;
+  }
+  .nav-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:8px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    color:#CBD6E1;
+    font-size:13.5px;
+  }
+  .nav-item.active{background:rgba(255,255,255,0.12); color:#fff; font-weight:600;}
+  .nav-item:hover:not(.active){background:rgba(255,255,255,0.06);}
+  .nav-count{font-size:12px; color:#93A3B4;}
+  .nav-item.active .nav-count{color:#D9E4EE;}
+
+  .filter-block{
+    margin-top:auto;
+    background: rgba(255,255,255,0.07);
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:8px;
+    padding:14px;
+  }
+  .filter-block-title{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:13px;
+    font-weight:600;
+    color:#fff;
+    margin-bottom:6px;
+  }
+  .filter-block p{
+    font-size:12.2px;
+    color:#B7C4D1;
+    margin:0 0 10px 0;
+  }
+  .toggle-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:12.5px;
+    color:#DCE5EE;
+    padding:4px 0;
+  }
+  .switch{
+    width:34px; height:19px;
+    background: var(--teal);
+    border-radius:99px;
+    position:relative;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .switch::after{
+    content:"";
+    position:absolute;
+    width:15px; height:15px;
+    background:#fff;
+    border-radius:50%;
+    top:2px; right:2px;
+  }
+
+  .focus-block{
+    background: rgba(255,255,255,0.07);
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:8px;
+    padding:14px;
+    margin-bottom:14px;
+  }
+  .focus-block-title{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:13px;
+    font-weight:600;
+    color:#fff;
+    margin-bottom:6px;
+  }
+  .focus-block p{
+    font-size:12.2px;
+    color:#B7C4D1;
+    margin:0 0 12px 0;
+  }
+  .focus-slider-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:6px;
+  }
+  .focus-slider-value{
+    font-size:13px;
+    font-weight:700;
+    color:#fff;
+  }
+  input[type="range"]{
+    -webkit-appearance:none;
+    width:100%;
+    height:4px;
+    border-radius:99px;
+    background: rgba(255,255,255,0.22);
+    margin: 10px 0 12px 0;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:16px; height:16px;
+    border-radius:50%;
+    background: var(--teal);
+    border:2px solid #fff;
+    cursor:pointer;
+  }
+  input[type="range"]::-moz-range-thumb{
+    width:16px; height:16px;
+    border-radius:50%;
+    background: var(--teal);
+    border:2px solid #fff;
+    cursor:pointer;
+  }
+  .focus-marks{
+    display:flex;
+    justify-content:space-between;
+    font-size:10.5px;
+    color:#93A3B4;
+    margin-bottom:12px;
+  }
+  .focus-start-btn{
+    width:100%;
+    background: var(--teal);
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    padding:9px 0;
+    font-size:12.8px;
+    font-weight:650;
+    cursor:pointer;
+  }
+  .focus-start-btn:hover{background:#356963;}
+  .focus-start-btn.stop{background: var(--brick);}
+  .focus-start-btn.stop:hover{background:#8C2E3D;}
+
+  .focus-banner{
+    display:none;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    background: var(--navy);
+    color:#fff;
+    padding:11px 26px;
+  }
+  .focus-banner.shown{display:flex;}
+  .focus-banner-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:13px;
+  }
+  .focus-banner-left b{font-weight:650;}
+  .focus-timer{
+    font-variant-numeric: tabular-nums;
+    font-weight:700;
+    background: rgba(255,255,255,0.14);
+    padding:3px 10px;
+    border-radius:6px;
+    font-size:12.5px;
+  }
+  .focus-banner-sub{
+    font-size:12px;
+    color:#B7C4D1;
+  }
+  .focus-end-btn{
+    background: transparent;
+    border:1px solid rgba(255,255,255,0.4);
+    color:#fff;
+    border-radius:6px;
+    padding:6px 12px;
+    font-size:12px;
+    font-weight:600;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .focus-end-btn:hover{background: rgba(255,255,255,0.1);}
+
+  .paused-note{
+    padding: 10px 18px;
+    font-size:12px;
+    color: var(--text-faint);
+    text-align:center;
+    border-bottom:1px solid var(--border);
+    background:#FAFBFC;
+  }
+
+  .compare-label{
+    font-size:11.5px;
+    font-weight:650;
+    color: var(--text-faint);
+    margin-bottom:7px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .compare-box{
+    border-radius:8px;
+    padding:14px 16px;
+    font-size:13.2px;
+    white-space:pre-line;
+    margin-bottom:18px;
+    line-height:1.6;
+    border:1px solid var(--border);
+  }
+  .compare-box.original{background: var(--amber-bg); border-color:#EAD5AE;}
+  .compare-box.proposed{background: var(--teal-bg); border-color:#CFE4E0;}
+  .sent-meta-label{
+    font-size:11.5px;
+    color: var(--text-faint);
+    margin-bottom:2px;
+  }
+
+  /* ---------- Affordances de démo : rendre les zones cliquables évidentes ---------- */
+  button{cursor:pointer;}
+  .mail-item, .digest-card, .nav-item, .example-chip, .attachment-chip{
+    transition: background 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  }
+  .mail-item:hover{
+    box-shadow: inset 3px 0 0 var(--navy-soft);
+  }
+  .digest-card:hover{
+    box-shadow: 0 3px 10px rgba(20,50,79,0.10);
+    transform: translateY(-1px);
+    border-color: var(--navy-soft);
+  }
+  .compose-btn, .send-btn, .expand-btn, .focus-start-btn, .banner-btn, .switch, .example-chip{
+    cursor:pointer;
+  }
+  .banner-btn:hover, .send-btn:hover{ filter: brightness(0.93); }
+  .expand-btn, .banner-btn, .example-chip{
+    box-shadow: 0 1px 0 rgba(20,50,79,0.05);
+  }
+  /* petit repère visuel "cliquable" sur les cartes de liste */
+  .mail-item::after, .digest-card::after{
+    content:"›";
+    position:absolute;
+    right:14px;
+    top:50%;
+    transform:translateY(-50%);
+    color: var(--text-faint);
+    font-size:16px;
+    opacity:0;
+    transition: opacity 0.15s ease;
+  }
+  .digest-card{position:relative;}
+  .mail-item:hover::after, .digest-card:hover::after{opacity:1;}
+
+  /* ---------- List pane ---------- */
+  .list-pane{
+    width: 350px;
+    flex-shrink:0;
+    background: var(--panel);
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+  }
+  .list-header{
+    padding:16px 18px 12px;
+    border-bottom:1px solid var(--border);
+  }
+  .list-header h1{
+    font-size:17px;
+    margin:0 0 10px 0;
+  }
+  .search{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background: var(--bg);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:7px 10px;
+    color: var(--text-faint);
+    font-size:13px;
+  }
+  .list-scroll{
+    overflow-y:auto;
+    flex:1;
+  }
+  .mail-item{
+    display:flex;
+    gap:11px;
+    padding:13px 18px;
+    border-bottom:1px solid var(--border);
+    cursor:pointer;
+    position:relative;
+  }
+  .mail-item:hover{background:#FAFBFC;}
+  .mail-item.selected{background:#EFF4F9; border-left:3px solid var(--navy-soft); padding-left:15px;}
+  .avatar{
+    width:34px;height:34px;border-radius:50%;
+    background: var(--bg);
+    border:1px solid var(--border);
+    color: var(--text-soft);
+    display:flex;align-items:center;justify-content:center;
+    font-size:12.5px;font-weight:600;
+    flex-shrink:0;
+  }
+  .mail-body{flex:1; min-width:0;}
+  .mail-top{display:flex; justify-content:space-between; gap:8px;}
+  .mail-sender{font-weight:600; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .mail-time{font-size:11.5px; color:var(--text-faint); flex-shrink:0;}
+  .mail-subject{font-size:13px; color:var(--text); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .mail-essential{
+    font-size:12px;
+    color: var(--text-soft);
+    margin-top:3px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    display:-webkit-box;
+    -webkit-line-clamp:1;
+    -webkit-box-orient:vertical;
+  }
+  .badges-row{display:flex; gap:5px; margin-top:6px; flex-wrap:wrap;}
+  .badge{
+    font-size:10.8px;
+    font-weight:600;
+    padding:2.5px 7px;
+    border-radius:99px;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+  }
+  .badge-essential{background:var(--teal-bg); color:var(--teal);}
+  .badge-caution{background:var(--amber-bg); color:var(--amber);}
+  .badge-alert{background:var(--brick-bg); color:var(--brick);}
+  .badge-urgent{background:var(--urgent-bg); color:var(--urgent);}
+  .mail-item.is-urgent{border-left:3px solid var(--urgent); padding-left:15px;}
+  .mail-item.is-urgent.selected{border-left:3px solid var(--urgent);}
+  .group-label{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:10px 18px 6px;
+    font-size:11px;
+    font-weight:650;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    color: var(--text-faint);
+    background: var(--bg);
+  }
+  .group-label.urgent{color: var(--urgent);}
+  .group-label .flame{flex-shrink:0;}
+  .unread-dot{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--unread-dot);
+    position:absolute; left:6px; top:20px;
+  }
+
+  /* ---------- Reading pane ---------- */
+  .reading-pane{
+    flex:1;
+    overflow-y:auto;
+    padding: 28px 40px;
+    background: var(--panel);
+  }
+  .reading-pane .empty{
+    color:var(--text-faint);
+    padding-top:80px;
+    text-align:center;
+    font-size:13.5px;
+  }
+  .r-subject{font-size:20px; font-weight:650; margin:0 0 14px 0;}
+  .r-meta{
+    display:flex; align-items:center; gap:10px;
+    padding-bottom:18px; margin-bottom:18px;
+    border-bottom:1px solid var(--border);
+  }
+  .r-meta .avatar{width:38px;height:38px;font-size:13.5px;}
+  .r-from-name{font-weight:600; font-size:13.5px;}
+  .r-from-addr{font-size:12px; color:var(--text-faint);}
+
+  .banner{
+    border-radius:8px;
+    padding:14px 16px;
+    margin-bottom:18px;
+    display:flex;
+    gap:12px;
+  }
+  .banner-alert{background:var(--brick-bg); border:1px solid #E7C3C8;}
+  .banner-caution{background:var(--amber-bg); border:1px solid #EAD5AE;}
+  .banner-icon{flex-shrink:0; margin-top:1px;}
+  .banner-icon.alert{color:var(--brick);}
+  .banner-icon.caution{color:var(--amber);}
+  .banner-title{font-weight:650; font-size:13.5px; margin-bottom:3px;}
+  .banner-title.alert{color:var(--brick);}
+  .banner-title.caution{color:var(--amber);}
+  .banner-text{font-size:12.8px; color:var(--text-soft); margin-bottom:9px;}
+  .banner-actions{display:flex; gap:8px;}
+  .banner-btn{
+    font-size:12px; font-weight:600;
+    padding:6px 11px; border-radius:6px;
+    border:1px solid transparent;
+    cursor:pointer;
+  }
+  .banner-btn.primary.alert{background:var(--brick); color:#fff;}
+  .banner-btn.primary.caution{background:var(--amber); color:#fff;}
+  .banner-btn.secondary{background:transparent; border-color: currentColor; color:inherit;}
+
+  .essential-card{
+    background: var(--teal-bg);
+    border:1px solid #CFE4E0;
+    border-radius:8px;
+    padding:16px 18px;
+    margin-bottom: 20px;
+  }
+  .essential-card-head{
+    display:flex; align-items:center; gap:7px;
+    color: var(--teal);
+    font-weight:650;
+    font-size:12.8px;
+    margin-bottom:9px;
+  }
+  .essential-list{margin:0; padding-left:18px; font-size:13.3px;}
+  .essential-list li{margin-bottom:5px;}
+  .essential-list li:last-child{margin-bottom:0;}
+
+  .attachment-chip{
+    display:inline-flex; align-items:center; gap:8px;
+    border:1px solid var(--border);
+    border-radius:7px;
+    padding:7px 11px;
+    font-size:12.5px;
+    margin-top:10px;
+    margin-right:8px;
+    background:#fff;
+  }
+  .attachment-chip .a-name{font-weight:600;}
+  .attachment-chip .a-note{color:var(--text-faint);}
+
+  .expand-row{
+    margin-top: 4px;
+    margin-bottom: 18px;
+  }
+  .expand-btn{
+    background:none;
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:8px 13px;
+    font-size:12.8px;
+    font-weight:600;
+    color: var(--navy-soft);
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .expand-btn:hover{background:#F5F8FA;}
+
+  .full-body{
+    display:none;
+    font-size:13.6px;
+    color: var(--text);
+    padding-top: 6px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+    white-space: pre-line;
+  }
+  .full-body.shown{display:block;}
+
+  .r-priority-line{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:12.3px;
+    font-weight:650;
+    color: var(--urgent);
+    margin: -6px 0 16px 0;
+  }
+  .flag-icon-small{width:14px;height:14px;}
+
+  /* ---------- Digest / feed view ---------- */
+  .digest-pane{
+    display:none;
+    flex-direction: column;
+    flex:1;
+    overflow-y:auto;
+    background: var(--bg);
+  }
+  .digest-header{
+    padding: 26px 40px 14px;
+    max-width: 720px;
+  }
+  .digest-header h1{font-size:19px; margin:0 0 5px 0;}
+  .digest-header p{font-size:13px; color:var(--text-soft); margin:0;}
+  .digest-scroll{
+    padding: 4px 40px 40px;
+    max-width: 720px;
+  }
+  .digest-card{
+    background: var(--panel);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:16px 18px;
+    margin-bottom:14px;
+    cursor:pointer;
+  }
+  .digest-card:hover{border-color:#C9D2DB;}
+  .digest-card-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:8px;
+  }
+  .digest-who{display:flex; align-items:center; gap:10px;}
+  .digest-who .avatar{width:30px;height:30px;font-size:11.5px;}
+  .digest-sender{font-weight:650; font-size:13.5px;}
+  .digest-subject{font-size:12.5px; color:var(--text-soft); margin-top:1px;}
+  .digest-time{font-size:11.5px; color:var(--text-faint); flex-shrink:0;}
+  .digest-essential{margin:0; padding-left:18px; font-size:13px;}
+  .digest-essential li{margin-bottom:4px;}
+  .digest-essential li:last-child{margin-bottom:0;}
+  .digest-flag-line{
+    display:flex; align-items:center; gap:6px;
+    font-size:12px; font-weight:600;
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px solid var(--border);
+  }
+  .digest-flag-line.caution{color:var(--amber);}
+  .digest-flag-line.alert{color:var(--brick);}
+  .digest-card.is-urgent{border-left:3px solid var(--urgent);}
+  .digest-group-label{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:11px;
+    font-weight:650;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    color: var(--text-faint);
+    margin: 4px 0 10px 0;
+  }
+  .digest-group-label.urgent{color: var(--urgent);}
+</style>
+</head>
+<body>
+
+<div class="focus-banner" id="focusBanner">
+  <div class="focus-banner-left">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <b>Mode concentration actif</b>
+    <span class="focus-timer" id="focusTimer">30:00</span>
+    <span class="focus-banner-sub" id="focusSub">Seuls les messages urgents s'affichent.</span>
+  </div>
+  <button class="focus-end-btn" id="focusEndBtn">Terminer</button>
+</div>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="brand">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="5" fill="#fff" fill-opacity="0.15"/><path d="M5 8l7 5 7-5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="5" y="6" width="14" height="12" rx="2" stroke="#fff" stroke-width="1.6"/></svg>
+      <div>
+        <div class="brand-main">URGENTIA</div>
+        <div class="brand-sub">@ Quiet Feed Company</div>
+      </div>
+    </div>
+    <div class="mit-badge">
+      <div class="mit-mark">MIT</div>
+      <span>Student Project 2026/2027</span>
+    </div>
+    <button class="compose-btn">+ Nouveau message</button>
+
+    <div class="nav-section-label">Affichage</div>
+    <div class="nav-item view-item active" data-view="detail"><span>Vue détaillée</span></div>
+    <div class="nav-item view-item" data-view="digest"><span>Vue résumés</span></div>
+
+    <div class="nav-section-label">Dossiers</div>
+    <div class="nav-item folder-item active" data-folder="inbox"><span>Boîte de réception</span><span class="nav-count">4</span></div>
+    <div class="nav-item folder-item" data-folder="sent"><span>Envoyés</span></div>
+    <div class="nav-item"><span>Brouillons</span><span class="nav-count">1</span></div>
+    <div class="nav-item"><span>Archives</span></div>
+    <div class="nav-item"><span>Corbeille</span></div>
+
+    <div class="focus-block">
+      <div class="focus-block-title">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="1.6"/><path d="M12 7v5l3 2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Mode concentration
+      </div>
+      <p>Ne laisse passer que les messages urgents pendant la durée choisie. Le reste attend dans la boîte, sans notification.</p>
+      <div class="focus-slider-row">
+        <span style="font-size:12.2px; color:#B7C4D1;">Durée</span>
+        <span class="focus-slider-value" id="focusValueLabel">30 min</span>
+      </div>
+      <input type="range" id="focusSlider" min="10" max="90" step="5" value="30">
+      <div class="focus-marks"><span>10 min</span><span>50 min</span><span>90 min</span></div>
+      <button class="focus-start-btn" id="focusToggleBtn">Démarrer 30 min de concentration</button>
+    </div>
+
+    <div class="filter-block">
+      <div class="filter-block-title">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 5h16M7 12h10M10 19h4" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+        Filtre intelligent
+      </div>
+      <p>Résume chaque mail à l'essentiel et repère les tons agressifs ou les reproches répétés avant que vous ne lisiez tout.</p>
+      <div class="toggle-row"><span>Résumé automatique</span><div class="switch"></div></div>
+      <div class="toggle-row"><span>Alerte tons conflictuels</span><div class="switch"></div></div>
+    </div>
+  </div>
+
+  <!-- LIST PANE -->
+  <div class="list-pane" id="listPane">
+    <div class="list-header">
+      <h1 id="listHeaderTitle">Boîte de réception</h1>
+      <div class="search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Rechercher
+      </div>
+    </div>
+    <div class="list-scroll" id="mailList"></div>
+  </div>
+
+  <!-- READING PANE -->
+  <div class="reading-pane" id="readingPane">
+    <div class="empty">Sélectionnez un message pour voir son résumé.</div>
+  </div>
+
+  <!-- DIGEST / FEED VIEW -->
+  <div class="digest-pane" id="digestPane">
+    <div class="digest-header">
+      <h1>Vue résumés</h1>
+      <p>Tous vos messages, réduits à l'essentiel, les uns à la suite des autres.</p>
+    </div>
+    <div class="digest-scroll" id="digestList"></div>
+  </div>
+
+</div>
+
+<script>
+const mails = [
+  {
+    id: 5,
+    sender: "Thuy Pham",
+    initials: "TP",
+    address: "thuy.pham@mit.edu",
+    subject: "Votre projet — vraiment bravo",
+    time: "10:03",
+    unread: true,
+    flag: null,
+    priority: "low",
+    essential: [
+      "Retour très positif sur le projet dans son ensemble",
+      "Souligne l'imagination et la bonne application du cours",
+      "Évoque une possible nomination au Fire Hydrant Award"
+    ],
+    attachments: [],
+    full: `Bonjour chers étudiants,
+
+Ce fut un réel plaisir de lire votre projet et je le trouve magnifique et fascinant. Vous avez fait preuve de beaucoup d'imagination et avez bien retenu mes cours.
+
+Je pense que vous allez recevoir le Fire Hydrant Award si vous continuez comme cela. Bravo !
+
+Thuy`
+  },
+  {
+    id: 1,
+    sender: "Claire Passympa",
+    initials: "CF",
+    address: "claire.passympa@partenaire-external.fr",
+    subject: "Retard sur la livraison du lot 3",
+    time: "09:12",
+    unread: true,
+    flag: "caution",
+    flagTitle: "Ton tendu détecté",
+    flagText: "Ce message contient plusieurs reproches répétés sur les délais et une formulation à trois reprises jugée culpabilisante (« comme d'habitude », « ce n'est pas sérieux »). Le contenu factuel reste lisible dans le résumé ci-dessous.",
+    priority: "urgent",
+    priorityReason: "Échéance vendredi + risque financier (retard de paiement client)",
+    essential: [
+      "Le lot 3 a 4 jours de retard sur le planning validé",
+      "Le client final menace de reporter le paiement de l'acompte",
+      "Demande une réponse avec un nouveau planning avant vendredi"
+    ],
+    attachments: [
+      { name: "Planning_v3.xlsx", note: "colonnes retard surlignées en rouge" }
+    ],
+    full: `Bonjour,
+
+Alors là c'est n'importe quoi, comme d'habitude on est encore en retard sur ce lot. Ce n'est pas sérieux de votre part, je vous avais prévenu la semaine dernière que le client ne tolérerait plus aucun écart.
+
+Le lot 3 devait être livré lundi, nous sommes jeudi. Le client final menace de reporter le paiement de l'acompte si rien ne bouge d'ici vendredi.
+
+J'attends un planning révisé et des excuses claires sur ce qui s'est passé.
+
+Claire`
+  },
+  {
+    id: 2,
+    sender: "Marc Delattre",
+    initials: "MD",
+    address: "marc.delattre@monentreprise.fr",
+    subject: "RH — Point sur ton absence de lundi",
+    time: "08:47",
+    unread: true,
+    flag: "alert",
+    flagTitle: "Contenu potentiellement problématique",
+    flagText: "Ce message revient sur une absence personnelle en des termes insistants et comporte une remarque à caractère intrusif sur ta vie privée. Vous pouvez le signaler directement aux RH sans avoir à le relire.",
+    priority: "normal",
+    essential: [
+      "Demande de justification de l'absence de lundi",
+      "Fait référence à une conversation privée hors cadre professionnel",
+      "Aucune action urgente requise de votre part"
+    ],
+    attachments: [],
+    full: `Salut,
+
+Encore absent lundi... ça devient une habitude non ? Tu devrais peut-être régler tes problèmes personnels avant que ça affecte l'équipe, on en a déjà parlé plusieurs fois.
+
+J'ai besoin d'un mot d'explication pour le dossier RH, mais surtout arrange-toi pour que ça ne se reproduise plus.
+
+Marc`
+  },
+  {
+    id: 3,
+    sender: "Amélie Roussel",
+    initials: "AR",
+    address: "amelie.roussel@monentreprise.fr",
+    subject: "Validation budget Q4 — action requise",
+    time: "hier",
+    unread: false,
+    flag: null,
+    priority: "urgent",
+    priorityReason: "Validation attendue avant vendredi 17h",
+    essential: [
+      "Le budget Q4 est prêt, il manque votre validation",
+      "Écart de +6% vs Q3, détaillé dans le fichier joint",
+      "Échéance de validation : vendredi 17h"
+    ],
+    attachments: [
+      { name: "Budget_Q4_2026.xlsx", note: "3 onglets, écarts en page 2" }
+    ],
+    full: `Bonjour,
+
+Voici le budget Q4 consolidé pour validation. L'écart de +6% par rapport au Q3 s'explique principalement par le recrutement de deux postes support prévus au plan.
+
+Merci de valider avant vendredi 17h pour respecter le calendrier de clôture.
+
+Amélie`
+  },
+  {
+    id: 4,
+    sender: "Service Facturation",
+    initials: "SF",
+    address: "facturation@fournisseur-cloud.com",
+    subject: "Votre facture de septembre est disponible",
+    time: "hier",
+    unread: false,
+    flag: null,
+    priority: "low",
+    essential: [
+      "Facture de septembre : 1 240 €, TTC",
+      "Prélèvement automatique prévu le 15",
+      "Aucune action nécessaire"
+    ],
+    attachments: [
+      { name: "Facture_sept_2026.pdf", note: "montant et RIB p.1" }
+    ],
+    full: `Bonjour,
+
+Votre facture du mois de septembre est disponible en pièce jointe, pour un montant total de 1 240 € TTC.
+
+Le prélèvement interviendra automatiquement le 15 du mois sur le compte enregistré. Aucune action de votre part n'est nécessaire.
+
+Cordialement,
+Service Facturation`
+  }
+];
+
+const sentMails = [
+  {
+    id: 102,
+    recipient: "Marc Delattre",
+    initials: "MD",
+    address: "marc.delattre@monentreprise.fr",
+    subject: "Retard sur la livraison du lot 3",
+    time: "Envoyé aujourd'hui à 09:40",
+    badgeLabel: "Ton à revoir",
+    bannerTitle: "Ton potentiellement perçu comme accusateur",
+    bannerText: "Ce message répète plusieurs reproches directs («comme d'habitude», «ce n'est pas sérieux») qui risquent de braquer votre interlocuteur sans faire avancer le problème plus vite. La reformulation ci-dessous garde la même fermeté sur le fond — le retard, l'urgence, la demande de planning — en retirant ce qui relève du reproche personnel.",
+    original: `Alors là c'est n'importe quoi, comme d'habitude on est encore en retard sur ce lot. Ce n'est pas sérieux de votre part, je vous avais prévenu la semaine dernière que le client ne tolérerait plus aucun écart.
+
+Le lot 3 devait être livré lundi, nous sommes jeudi. J'attends un planning révisé et des excuses claires sur ce qui s'est passé.`,
+    proposed: `Bonjour,
+
+Je voulais faire un point sur le lot 3 : le délai de livraison initial (lundi) n'a pas été tenu, et nous sommes aujourd'hui jeudi. J'avais signalé la semaine dernière que le client attendait un respect strict du calendrier, donc ce retard m'inquiète pour la suite.
+
+Pourriez-vous m'envoyer un planning révisé et m'expliquer ce qui a causé ce décalage ? Je reste disponible si besoin d'en discuter.`
+  },
+  {
+    id: 101,
+    recipient: "Arjun Mehta",
+    initials: "AM",
+    address: "arjun.mehta@partenaire-inde.com",
+    subject: "Report delay — need this today",
+    time: "Envoyé aujourd'hui à 14:20",
+    badgeLabel: "Ton à revoir",
+    bannerTitle: "Formulation en décalage avec les usages d'affaires en Inde",
+    bannerText: "Ce message va droit au but, sans formule d'ouverture ni reconnaissance du travail déjà fourni. Dans les échanges professionnels en Inde, le ton privilégie en général la courtoisie, une entrée en matière plus chaleureuse et une façon plus indirecte de formuler une critique ou une urgence — l'aller-droit-au-but à l'anglo-saxonne peut y être perçu comme cassant, même sans mauvaise intention. Ce sont des tendances générales, pas une règle universelle : elles varient selon les personnes, les entreprises et les régions.",
+    original: `Arjun,
+
+The report is late again. I need it today, no more delays. This is affecting the whole team.
+
+Send it as soon as possible.`,
+    proposed: `Dear Arjun,
+
+I hope you are doing well. I wanted to follow up on the report — I understand things can get busy on your end, and I would really appreciate it if we could have it ready today, as it is starting to affect the wider team's timeline.
+
+Please do let me know if there's anything blocking you or if I can help in any way.
+
+Thank you for your continued effort on this.
+
+Best regards`
+  }
+];
+
+const listEl = document.getElementById('mailList');
+const paneEl = document.getElementById('readingPane');
+
+const priorityOrder = { urgent: 0, normal: 1, low: 2 };
+const priorityLabel = { urgent: "Urgent", normal: "À traiter", low: "Faible priorité" };
+
+function sortedByPriority(){
+  return mails.slice().sort((a,b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+}
+
+function badgeHtml(mail){
+  let b = '';
+  if(mail.priority === 'urgent') b += '<span class="badge badge-urgent">⚡ Urgent</span>';
+  b += '<span class="badge badge-essential">Résumé prêt</span>';
+  if(mail.flag === 'caution') b += '<span class="badge badge-caution">Ton tendu</span>';
+  if(mail.flag === 'alert') b += '<span class="badge badge-alert">À signaler</span>';
+  return b;
+}
+
+function renderList(){
+  const ordered = visibleMails();
+  const hiddenCount = mails.length - ordered.length;
+  let html = '';
+
+  if(focusModeActive){
+    html += `<div class="paused-note">${hiddenCount} message${hiddenCount>1?'s':''} non urgent${hiddenCount>1?'s':''} mis en pause pendant la concentration</div>`;
+  }
+
+  let lastGroup = null;
+
+  ordered.forEach(m => {
+    if(m.priority !== lastGroup){
+      const flame = m.priority === 'urgent'
+        ? '<svg class="flame" width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 2c1 3-2 4-2 7a4 4 0 0 0 8 0c0-1-.5-2-1-3 2 1 3 4 3 6a6 6 0 1 1-12 0c0-4 2-6 4-10z" fill="currentColor"/></svg>'
+        : '';
+      html += `<div class="group-label ${m.priority==='urgent'?'urgent':''}">${flame} ${priorityLabel[m.priority]}</div>`;
+      lastGroup = m.priority;
+    }
+    html += `
+      <div class="mail-item ${m.id===5?'selected':''} ${m.priority==='urgent'?'is-urgent':''}" data-id="${m.id}">
+        ${m.unread ? '<div class="unread-dot"></div>' : ''}
+        <div class="avatar">${m.initials}</div>
+        <div class="mail-body">
+          <div class="mail-top">
+            <div class="mail-sender">${m.sender}</div>
+            <div class="mail-time">${m.time}</div>
+          </div>
+          <div class="mail-subject">${m.subject}</div>
+          <div class="mail-essential">${m.essential[0]}</div>
+          <div class="badges-row">${badgeHtml(m)}</div>
+        </div>
+      </div>
+    `;
+  });
+
+  listEl.innerHTML = html;
+
+  document.querySelectorAll('.mail-item').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      document.querySelectorAll('.mail-item').forEach(x=>x.classList.remove('selected'));
+      el.classList.add('selected');
+      renderReading(parseInt(el.dataset.id));
+    });
+  });
+}
+
+function renderReading(id){
+  const m = mails.find(x=>x.id===id);
+  let banner = '';
+  if(m.flag === 'caution'){
+    banner = `
+      <div class="banner banner-caution">
+        <div class="banner-icon caution">
+          <svg class="flag-icon-small" viewBox="0 0 24 24" fill="none"><path d="M12 9v4M12 17h.01M10.29 3.86l-8.2 14.2A1.5 1.5 0 0 0 3.37 20h17.26a1.5 1.5 0 0 0 1.28-2.14l-8.2-14.2a1.5 1.5 0 0 0-2.42 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div class="banner-title caution">${m.flagTitle}</div>
+          <div class="banner-text">${m.flagText}</div>
+          <div class="banner-actions">
+            <button class="banner-btn primary caution">Signaler ce ton à mon manager</button>
+            <button class="banner-btn secondary" style="color:var(--amber)">Ignorer</button>
+          </div>
+        </div>
+      </div>`;
+  } else if(m.flag === 'alert'){
+    banner = `
+      <div class="banner banner-alert">
+        <div class="banner-icon alert">
+          <svg class="flag-icon-small" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v5M12 16h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <div class="banner-title alert">${m.flagTitle}</div>
+          <div class="banner-text">${m.flagText}</div>
+          <div class="banner-actions">
+            <button class="banner-btn primary alert">Transmettre aux RH</button>
+            <button class="banner-btn secondary" style="color:var(--brick)">Ignorer</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  let priorityLine = '';
+  if(m.priority === 'urgent'){
+    priorityLine = `
+      <div class="r-priority-line">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2c1 3-2 4-2 7a4 4 0 0 0 8 0c0-1-.5-2-1-3 2 1 3 4 3 6a6 6 0 1 1-12 0c0-4 2-6 4-10z" fill="currentColor"/></svg>
+        Urgent${m.priorityReason ? ' — ' + m.priorityReason : ''}
+      </div>`;
+  }
+
+  const attachmentsHtml = m.attachments.length ? m.attachments.map(a=>`
+    <div class="attachment-chip">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 10.5l-8.5 8.5a4 4 0 0 1-5.66-5.66l9-9a2.5 2.5 0 0 1 3.54 3.54l-8.83 8.83a1 1 0 0 1-1.42-1.42l7.78-7.78" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="a-name">${a.name}</span>
+      <span class="a-note">— ${a.note}</span>
+    </div>
+  `).join('') : '';
+
+  paneEl.innerHTML = `
+    <h2 class="r-subject">${m.subject}</h2>
+    <div class="r-meta">
+      <div class="avatar">${m.initials}</div>
+      <div>
+        <div class="r-from-name">${m.sender}</div>
+        <div class="r-from-addr">${m.address}</div>
+      </div>
+    </div>
+
+    ${banner}
+
+    ${priorityLine}
+
+    <div class="essential-card">
+      <div class="essential-card-head">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/></svg>
+        L'essentiel
+      </div>
+      <ul class="essential-list">
+        ${m.essential.map(e=>`<li>${e}</li>`).join('')}
+      </ul>
+      ${attachmentsHtml}
+    </div>
+
+    <div class="expand-row">
+      <button class="expand-btn" id="expandBtn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Voir l'email complet
+      </button>
+    </div>
+
+    <div class="full-body" id="fullBody">${m.full}</div>
+  `;
+
+  document.getElementById('expandBtn').addEventListener('click', function(){
+    const fb = document.getElementById('fullBody');
+    fb.classList.toggle('shown');
+    this.innerHTML = fb.classList.contains('shown')
+      ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 15l-6-6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Réduire`
+      : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Voir l'email complet`;
+  });
+}
+
+function renderDigest(){
+  const digestEl = document.getElementById('digestList');
+  const ordered = visibleMails();
+  const hiddenCount = mails.length - ordered.length;
+  let html = '';
+
+  if(focusModeActive){
+    html += `<div class="paused-note" style="margin-bottom:14px; border-radius:8px; border:1px solid var(--border);">${hiddenCount} message${hiddenCount>1?'s':''} non urgent${hiddenCount>1?'s':''} mis en pause pendant la concentration</div>`;
+  }
+
+  let lastGroup = null;
+
+  ordered.forEach(m => {
+    if(m.priority !== lastGroup){
+      html += `<div class="digest-group-label ${m.priority==='urgent'?'urgent':''}">${priorityLabel[m.priority]}</div>`;
+      lastGroup = m.priority;
+    }
+    let flagLine = '';
+    if(m.flag === 'caution') flagLine = `<div class="digest-flag-line caution">⚠ Ton tendu détecté — voir en vue détaillée</div>`;
+    if(m.flag === 'alert') flagLine = `<div class="digest-flag-line alert">⚠ Contenu à signaler — voir en vue détaillée</div>`;
+    html += `
+      <div class="digest-card ${m.priority==='urgent'?'is-urgent':''}" data-id="${m.id}">
+        <div class="digest-card-top">
+          <div class="digest-who">
+            <div class="avatar">${m.initials}</div>
+            <div>
+              <div class="digest-sender">${m.sender}</div>
+              <div class="digest-subject">${m.subject}</div>
+            </div>
+          </div>
+          <div class="digest-time">${m.time}</div>
+        </div>
+        <ul class="digest-essential">
+          ${m.essential.map(e=>`<li>${e}</li>`).join('')}
+        </ul>
+        ${flagLine}
+      </div>
+    `;
+  });
+
+  digestEl.innerHTML = html;
+
+  document.querySelectorAll('.digest-card').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = parseInt(el.dataset.id);
+      switchView('detail');
+      document.querySelectorAll('.mail-item').forEach(x=>x.classList.remove('selected'));
+      const target = document.querySelector(`.mail-item[data-id="${id}"]`);
+      if(target) target.classList.add('selected');
+      renderReading(id);
+    });
+  });
+}
+
+function switchView(view){
+  document.querySelectorAll('.view-item').forEach(v=>v.classList.toggle('active', v.dataset.view===view));
+  document.getElementById('listPane').style.display = view==='detail' ? 'flex' : 'none';
+  document.getElementById('readingPane').style.display = view==='detail' ? 'block' : 'none';
+  document.getElementById('digestPane').style.display = view==='digest' ? 'flex' : 'none';
+}
+
+document.querySelectorAll('.view-item').forEach(el=>{
+  el.addEventListener('click', ()=> switchView(el.dataset.view));
+});
+
+let focusModeActive = false;
+
+function visibleMails(){
+  const ordered = sortedByPriority();
+  return focusModeActive ? ordered.filter(m => m.priority === 'urgent') : ordered;
+}
+
+// ---------- Focus mode ----------
+const focusSlider = document.getElementById('focusSlider');
+const focusValueLabel = document.getElementById('focusValueLabel');
+const focusToggleBtn = document.getElementById('focusToggleBtn');
+const focusBanner = document.getElementById('focusBanner');
+const focusTimerEl = document.getElementById('focusTimer');
+const focusSub = document.getElementById('focusSub');
+const focusEndBtn = document.getElementById('focusEndBtn');
+
+let focusSecondsLeft = 0;
+let focusIntervalId = null;
+
+focusSlider.addEventListener('input', ()=>{
+  focusValueLabel.textContent = focusSlider.value + " min";
+  if(!focusModeActive){
+    focusToggleBtn.textContent = "Démarrer " + focusSlider.value + " min de concentration";
+  }
+});
+
+function formatTime(totalSeconds){
+  const mm = String(Math.floor(totalSeconds/60)).padStart(2,'0');
+  const ss = String(totalSeconds%60).padStart(2,'0');
+  return mm + ":" + ss;
+}
+
+function startFocusMode(){
+  focusModeActive = true;
+  focusSecondsLeft = parseInt(focusSlider.value) * 60;
+  focusTimerEl.textContent = formatTime(focusSecondsLeft);
+  focusBanner.classList.add('shown');
+  focusToggleBtn.textContent = "Arrêter la concentration";
+  focusToggleBtn.classList.add('stop');
+  focusSlider.disabled = true;
+
+  renderList();
+  renderDigest();
+
+  focusIntervalId = setInterval(()=>{
+    focusSecondsLeft--;
+    focusTimerEl.textContent = formatTime(focusSecondsLeft);
+    if(focusSecondsLeft <= 0){
+      stopFocusMode();
+    }
+  }, 1000);
+}
+
+function stopFocusMode(){
+  focusModeActive = false;
+  clearInterval(focusIntervalId);
+  focusBanner.classList.remove('shown');
+  focusToggleBtn.textContent = "Démarrer " + focusSlider.value + " min de concentration";
+  focusToggleBtn.classList.remove('stop');
+  focusSlider.disabled = false;
+
+  renderList();
+  renderDigest();
+}
+
+focusToggleBtn.addEventListener('click', ()=>{
+  if(focusModeActive){
+    stopFocusMode();
+  } else {
+    startFocusMode();
+  }
+});
+
+focusEndBtn.addEventListener('click', stopFocusMode);
+
+// ---------- Sent folder ----------
+function renderSentList(selectedId){
+  const activeId = selectedId || sentMails[0].id;
+  listEl.innerHTML = sentMails.map(m => `
+    <div class="mail-item ${m.id===activeId?'selected':''}" data-sent-id="${m.id}">
+      <div class="avatar">${m.initials}</div>
+      <div class="mail-body">
+        <div class="mail-top">
+          <div class="mail-sender">À : ${m.recipient}</div>
+          <div class="mail-time">${m.time}</div>
+        </div>
+        <div class="mail-subject">${m.subject}</div>
+        <div class="badges-row"><span class="badge badge-caution">${m.badgeLabel}</span></div>
+      </div>
+    </div>
+  `).join('');
+
+  document.querySelectorAll('[data-sent-id]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = parseInt(el.dataset.sentId);
+      renderSentList(id);
+      renderSentReading(id);
+    });
+  });
+}
+
+function renderSentReading(id){
+  const m = sentMails.find(x=>x.id===id);
+  paneEl.innerHTML = `
+    <h2 class="r-subject">${m.subject}</h2>
+    <div class="r-meta">
+      <div class="avatar">${m.initials}</div>
+      <div>
+        <div class="sent-meta-label">Envoyé à</div>
+        <div class="r-from-name">${m.recipient}</div>
+        <div class="r-from-addr">${m.address}</div>
+      </div>
+    </div>
+
+    <div class="banner banner-caution">
+      <div class="banner-icon caution">
+        <svg class="flag-icon-small" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </div>
+      <div>
+        <div class="banner-title caution">${m.bannerTitle}</div>
+        <div class="banner-text">${m.bannerText}</div>
+        <div class="banner-actions">
+          <button class="banner-btn primary caution" onclick="alert('Le corps du message serait remplacé par la version reformulée avant renvoi.')">Renvoyer avec la reformulation</button>
+          <button class="banner-btn secondary" style="color:var(--amber)">Garder tel quel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="compare-label">Message envoyé</div>
+    <div class="compare-box original">${m.original}</div>
+
+    <div class="compare-label">Reformulation suggérée</div>
+    <div class="compare-box proposed">${m.proposed}</div>
+  `;
+}
+
+document.querySelectorAll('.folder-item').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    document.querySelectorAll('.folder-item').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active');
+    const folder = el.dataset.folder;
+    switchView('detail');
+    if(folder === 'sent'){
+      document.getElementById('listHeaderTitle').textContent = 'Envoyés';
+      renderSentList(sentMails[0].id);
+      renderSentReading(sentMails[0].id);
+    } else {
+      document.getElementById('listHeaderTitle').textContent = 'Boîte de réception';
+      renderList();
+      renderReading(5);
+    }
+  });
+});
+
+renderList();
+renderReading(5);
+renderDigest();
+</script>
+
+</body>
+</html>
