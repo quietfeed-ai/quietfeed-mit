@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Quiet Feed — Client mail avec filtre intelligent</title>
+<title>QuietFeed AI — Agent de messagerie intelligent</title>
 <style>
   :root{
     --bg: #F5F6F8;
@@ -70,22 +70,29 @@
     line-height:1.3;
   }
   .mit-badge{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding: 0 6px 20px 6px;
-    font-size:11px;
-    color:#93A3B4;
+    padding: 0 6px 18px 6px;
   }
-  .mit-mark{
-    background:#A31F34;
-    color:#fff;
-    font-weight:700;
-    font-size:10px;
-    letter-spacing:0.03em;
-    padding:3px 6px;
-    border-radius:3px;
-    flex-shrink:0;
+  .mit-official-link{
+    display:block;
+    text-decoration:none;
+    border-radius:7px;
+    overflow:hidden;
+    background:#F2F3F5;
+    border:1px solid rgba(255,255,255,0.16);
+    line-height:0;
+  }
+  .mit-official-logo{
+    display:block;
+    width:100%;
+    height:auto;
+  }
+  .mit-project-label{
+    display:block;
+    margin-top:6px;
+    font-size:10.8px;
+    line-height:1.35;
+    color:#93A3B4;
+    text-align:center;
   }
   .brand svg{flex-shrink:0;}
   .compose-btn{
@@ -250,9 +257,11 @@
     align-items:center;
     justify-content:space-between;
     gap:16px;
-    background: var(--navy);
+    background: linear-gradient(90deg, #2F6F68 0%, #4F8E83 55%, #6FA69A 100%);
     color:#fff;
     padding:11px 26px;
+    border-bottom:1px solid rgba(255,255,255,0.22);
+    box-shadow:0 3px 12px rgba(47,111,104,0.18);
   }
   .focus-banner.shown{display:flex;}
   .focus-banner-left{
@@ -272,7 +281,7 @@
   }
   .focus-banner-sub{
     font-size:12px;
-    color:#B7C4D1;
+    color:#E5F4F0;
   }
   .focus-end-btn{
     background: transparent;
@@ -644,16 +653,798 @@
     margin: 4px 0 10px 0;
   }
   .digest-group-label.urgent{color: var(--urgent);}
+
+
+  /* ---------- Reporting : impact, temps gagné & bien-être numérique ---------- */
+  .impact-pane{
+    display:none;
+    flex:1;
+    overflow-y:auto;
+    background:linear-gradient(180deg,#F6FAF9 0%, var(--bg) 58%);
+  }
+  .impact-wrap{
+    width:min(1080px, calc(100% - 64px));
+    margin:0 auto;
+    padding:30px 0 54px;
+  }
+  .impact-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:20px;
+    margin-bottom:20px;
+  }
+  .impact-header h1{
+    margin:0 0 5px;
+    font-size:22px;
+    color:var(--navy);
+  }
+  .impact-header p{
+    margin:0;
+    color:var(--text-soft);
+    font-size:13px;
+  }
+  .demo-pill{
+    flex-shrink:0;
+    border:1px solid #CFE4E0;
+    background:var(--teal-bg);
+    color:var(--teal);
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:11.5px;
+    font-weight:700;
+  }
+
+  .impact-hero{
+    display:grid;
+    grid-template-columns:1.35fr .65fr;
+    gap:16px;
+    background:linear-gradient(135deg,#214E49 0%,#3E7C74 62%,#6AA196 100%);
+    color:#fff;
+    border-radius:14px;
+    padding:22px 24px;
+    margin-bottom:16px;
+    box-shadow:0 9px 24px rgba(47,111,104,.14);
+  }
+  .impact-hero-label{
+    font-size:12px;
+    color:#DDF0EC;
+    margin-bottom:5px;
+    font-weight:650;
+  }
+  .impact-hero-value{
+    font-size:38px;
+    line-height:1;
+    font-weight:760;
+    letter-spacing:-.03em;
+    margin-bottom:7px;
+  }
+  .impact-hero-sub{
+    font-size:13px;
+    color:#ECF8F5;
+    max-width:560px;
+  }
+  .impact-hero-target{
+    border-left:1px solid rgba(255,255,255,.25);
+    padding-left:22px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  .impact-target-title{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:#DDF0EC;
+    font-weight:700;
+    margin-bottom:5px;
+  }
+  .impact-target-value{
+    font-size:24px;
+    font-weight:750;
+    margin-bottom:4px;
+  }
+  .impact-target-note{
+    color:#DDF0EC;
+    font-size:11.8px;
+    line-height:1.45;
+  }
+
+  .kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:12px;
+    margin-bottom:16px;
+  }
+  .kpi-card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:11px;
+    padding:16px;
+    min-height:132px;
+    box-shadow:0 2px 8px rgba(20,50,79,.04);
+  }
+  .kpi-icon{
+    width:30px;height:30px;
+    border-radius:8px;
+    background:var(--teal-bg);
+    color:var(--teal);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:15px;
+    margin-bottom:10px;
+  }
+  .kpi-value{
+    font-size:24px;
+    line-height:1.05;
+    font-weight:750;
+    color:var(--navy);
+    margin-bottom:4px;
+  }
+  .kpi-label{
+    font-size:12.3px;
+    font-weight:650;
+    color:var(--text);
+    margin-bottom:3px;
+  }
+  .kpi-note{
+    font-size:11.2px;
+    color:var(--text-faint);
+    line-height:1.4;
+  }
+  .kpi-good{
+    color:var(--teal);
+    font-weight:700;
+  }
+
+  .impact-columns{
+    display:grid;
+    grid-template-columns:1.15fr .85fr;
+    gap:16px;
+    margin-bottom:16px;
+  }
+  .impact-panel{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:11px;
+    padding:18px;
+    box-shadow:0 2px 8px rgba(20,50,79,.04);
+  }
+  .impact-panel h2{
+    font-size:14px;
+    color:var(--navy);
+    margin:0 0 3px;
+  }
+  .panel-sub{
+    font-size:11.7px;
+    color:var(--text-faint);
+    margin-bottom:16px;
+  }
+
+  .week-chart{
+    height:168px;
+    display:flex;
+    align-items:flex-end;
+    gap:12px;
+    padding-top:8px;
+    border-bottom:1px solid var(--border);
+  }
+  .day-col{
+    flex:1;
+    min-width:0;
+    text-align:center;
+    color:var(--text-faint);
+    font-size:10.5px;
+  }
+  .bar-wrap{
+    height:126px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    margin-bottom:6px;
+  }
+  .time-bar{
+    width:min(38px,70%);
+    min-height:12px;
+    height:var(--h);
+    border-radius:7px 7px 2px 2px;
+    background:linear-gradient(180deg,#5D978E 0%,#3E7C74 100%);
+    position:relative;
+  }
+  .time-bar::before{
+    content:attr(data-value);
+    position:absolute;
+    top:-19px;
+    left:50%;
+    transform:translateX(-50%);
+    color:var(--teal);
+    font-weight:700;
+    font-size:10px;
+    white-space:nowrap;
+  }
+  .week-total{
+    margin-top:13px;
+    display:flex;
+    justify-content:space-between;
+    gap:14px;
+    font-size:12px;
+    color:var(--text-soft);
+  }
+  .week-total b{color:var(--navy);}
+
+  .wellbeing-score{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin:9px 0 12px;
+  }
+  .wellbeing-ring{
+    width:78px;height:78px;
+    border-radius:50%;
+    background:conic-gradient(var(--teal) 0 86%, #E8EEEC 86% 100%);
+    display:grid;
+    place-items:center;
+    flex-shrink:0;
+  }
+  .wellbeing-ring::after{
+    content:"4,3/5";
+    width:61px;height:61px;
+    border-radius:50%;
+    background:#fff;
+    display:grid;
+    place-items:center;
+    color:var(--navy);
+    font-weight:750;
+    font-size:15px;
+  }
+  .wellbeing-copy strong{
+    display:block;
+    color:var(--navy);
+    font-size:13px;
+    margin-bottom:3px;
+  }
+  .wellbeing-copy span{
+    display:block;
+    color:var(--text-soft);
+    font-size:11.7px;
+    line-height:1.45;
+  }
+  .privacy-note{
+    background:#F7F9FA;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:9px 10px;
+    color:var(--text-faint);
+    font-size:10.8px;
+    line-height:1.4;
+  }
+
+  .badges-panel{
+    margin-bottom:16px;
+  }
+  .badge-challenges{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:10px;
+  }
+  .challenge-badge{
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:13px 12px;
+    background:#FBFCFC;
+    min-height:104px;
+  }
+  .challenge-icon{
+    font-size:22px;
+    margin-bottom:6px;
+  }
+  .challenge-name{
+    font-size:12.2px;
+    font-weight:700;
+    color:var(--navy);
+    margin-bottom:3px;
+  }
+  .challenge-desc{
+    font-size:10.8px;
+    color:var(--text-faint);
+    line-height:1.35;
+  }
+  .challenge-badge.unlocked{
+    border-color:#CFE4E0;
+    background:var(--teal-bg);
+  }
+  .challenge-badge.unlocked .challenge-desc{color:#527B75;}
+
+  .reference-strip{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:0;
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow:hidden;
+    background:#fff;
+  }
+  .reference-item{
+    padding:13px 15px;
+    border-right:1px solid var(--border);
+  }
+  .reference-item:last-child{border-right:0;}
+  .reference-value{
+    color:var(--navy);
+    font-size:17px;
+    font-weight:750;
+  }
+  .reference-label{
+    color:var(--text-faint);
+    font-size:10.8px;
+    line-height:1.35;
+  }
+
+  @media(max-width:1050px){
+    .kpi-grid{grid-template-columns:repeat(2,1fr);}
+    .impact-columns{grid-template-columns:1fr;}
+    .badge-challenges{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:800px){
+    .impact-wrap{width:calc(100% - 28px);}
+    .impact-hero{grid-template-columns:1fr;}
+    .impact-hero-target{border-left:0;border-top:1px solid rgba(255,255,255,.25);padding:15px 0 0;}
+    .reference-strip{grid-template-columns:1fr;}
+    .reference-item{border-right:0;border-bottom:1px solid var(--border);}
+    .reference-item:last-child{border-bottom:0;}
+  }
+
+  /* ---------- Visite guidée QuietFeed AI ---------- */
+  .tour-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(10, 25, 40, 0.58);
+    z-index:9990;
+    display:none;
+  }
+  .tour-overlay.shown{display:block;}
+
+  .tour-card{
+    position:fixed;
+    z-index:9995;
+    width:min(360px, calc(100vw - 32px));
+    background:#fff;
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:12px;
+    box-shadow:0 18px 50px rgba(0,0,0,0.24);
+    padding:18px 18px 15px;
+    display:none;
+  }
+  .tour-card.shown{display:block;}
+
+  .tour-card.centered{
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+  }
+
+  .tour-kicker{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--teal);
+    margin-bottom:6px;
+  }
+  .tour-title{
+    font-size:18px;
+    line-height:1.25;
+    font-weight:700;
+    color:var(--navy);
+    margin-bottom:8px;
+  }
+  .tour-text{
+    font-size:13.2px;
+    line-height:1.55;
+    color:var(--text-soft);
+  }
+  .tour-actions{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-top:16px;
+  }
+  .tour-progress{
+    font-size:11.5px;
+    color:var(--text-faint);
+    white-space:nowrap;
+  }
+  .tour-buttons{
+    display:flex;
+    gap:8px;
+  }
+  .tour-btn{
+    border:1px solid var(--border);
+    background:#fff;
+    color:var(--navy);
+    border-radius:7px;
+    padding:7px 11px;
+    font-size:12.5px;
+    font-weight:650;
+    cursor:pointer;
+  }
+  .tour-btn:hover{background:#F5F8FA;}
+  .tour-btn.primary{
+    background:var(--navy);
+    border-color:var(--navy);
+    color:#fff;
+  }
+  .tour-btn.primary:hover{background:var(--navy-soft);}
+  .tour-btn.ghost{
+    border-color:transparent;
+    color:var(--text-faint);
+    padding-left:5px;
+    padding-right:5px;
+  }
+
+  .tour-highlight{
+    position:relative !important;
+    z-index:9992 !important;
+    border-radius:8px;
+    box-shadow:0 0 0 4px rgba(255,255,255,.98), 0 0 0 8px rgba(62,124,116,.92), 0 10px 30px rgba(0,0,0,.20) !important;
+  }
+
+  .tour-card::after{
+    content:"";
+    position:absolute;
+    width:0;
+    height:0;
+    border:10px solid transparent;
+    display:none;
+  }
+  .tour-card[data-placement="right"]::after{
+    display:block;
+    left:-20px;
+    top:28px;
+    border-right-color:#fff;
+  }
+  .tour-card[data-placement="left"]::after{
+    display:block;
+    right:-20px;
+    top:28px;
+    border-left-color:#fff;
+  }
+  .tour-card[data-placement="bottom"]::after{
+    display:block;
+    top:-20px;
+    left:28px;
+    border-bottom-color:#fff;
+  }
+  .tour-card[data-placement="top"]::after{
+    display:block;
+    bottom:-20px;
+    left:28px;
+    border-top-color:#fff;
+  }
+
+  .tour-replay{
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    z-index:3000;
+    border:1px solid #CFE4E0;
+    background:var(--teal-bg);
+    color:var(--teal);
+    border-radius:999px;
+    padding:9px 13px;
+    font-size:12px;
+    font-weight:700;
+    box-shadow:0 5px 18px rgba(20,50,79,.12);
+    cursor:pointer;
+  }
+  .tour-replay:hover{filter:brightness(.97);}
+
+  @media (max-width: 900px){
+    .tour-card{
+      left:16px !important;
+      right:16px !important;
+      bottom:16px !important;
+      top:auto !important;
+      width:auto;
+      transform:none !important;
+    }
+    .tour-card::after{display:none !important;}
+  }
+
+
+
+  /* ---------- Explicabilité & boucle agentique ---------- */
+  .agent-decision-card{
+    border:1px solid #CFDCE7;
+    background:#F7FAFC;
+    border-radius:10px;
+    margin:0 0 20px 0;
+    overflow:hidden;
+  }
+  .agent-decision-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    padding:13px 15px;
+  }
+  .agent-decision-brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+  }
+  .agent-orb{
+    width:31px;height:31px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--navy);color:#fff;font-size:14px;font-weight:800;
+    box-shadow:0 3px 10px rgba(20,50,79,.16);
+    flex-shrink:0;
+  }
+  .agent-decision-title{font-weight:700;font-size:13.3px;color:var(--navy);}
+  .agent-decision-sub{font-size:11.7px;color:var(--text-faint);margin-top:1px;}
+  .agent-explain-btn{
+    flex-shrink:0;
+    border:1px solid #BFCFDC;
+    background:#fff;
+    color:var(--navy-soft);
+    border-radius:7px;
+    padding:7px 10px;
+    font-size:11.8px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .agent-explain-btn:hover{background:#EFF5F8;}
+  .agent-decision-details{
+    display:none;
+    border-top:1px solid #DCE5EC;
+    padding:15px;
+    background:#fff;
+  }
+  .agent-decision-details.shown{display:block;}
+  .agent-rationale{
+    display:flex;
+    gap:8px;
+    align-items:flex-start;
+    padding:10px 11px;
+    border-radius:8px;
+    background:#F4F8FB;
+    color:var(--text-soft);
+    font-size:12.4px;
+    line-height:1.5;
+    margin-bottom:13px;
+  }
+  .agent-rationale b{color:var(--navy);}
+  .agent-cycle{
+    display:grid;
+    grid-template-columns:repeat(5, minmax(92px,1fr));
+    gap:7px;
+    align-items:stretch;
+    margin:0 0 13px 0;
+  }
+  .agent-step{
+    position:relative;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:9px 8px;
+    min-height:82px;
+    background:#fff;
+  }
+  .agent-step:not(:last-child)::after{
+    content:'›';
+    position:absolute;
+    right:-8px;
+    top:28px;
+    z-index:2;
+    width:15px;height:22px;
+    background:#fff;
+    color:var(--teal);
+    font-size:19px;font-weight:800;
+    text-align:center;
+  }
+  .agent-step-label{
+    font-size:9.7px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    font-weight:800;
+    color:var(--teal);
+    margin-bottom:5px;
+  }
+  .agent-step-value{
+    font-size:11.2px;
+    line-height:1.35;
+    color:var(--text);
+    font-weight:600;
+  }
+  .agent-guardrail{
+    display:flex;
+    align-items:flex-start;
+    gap:9px;
+    padding:10px 11px;
+    border-radius:8px;
+    background:var(--teal-bg);
+    border:1px solid #CFE4E0;
+    font-size:11.8px;
+    line-height:1.45;
+    color:#315F59;
+    margin-bottom:13px;
+  }
+  .agent-guardrail strong{color:var(--teal);}
+  .agent-feedback{
+    border-top:1px dashed var(--border);
+    padding-top:13px;
+  }
+  .agent-feedback-question{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .agent-feedback-copy strong{display:block;font-size:12.5px;color:var(--navy);}
+  .agent-feedback-copy span{display:block;font-size:11.4px;color:var(--text-faint);margin-top:2px;}
+  .agent-feedback-actions{display:flex;gap:7px;flex-shrink:0;}
+  .feedback-btn{
+    border:1px solid var(--border);
+    background:#fff;
+    border-radius:7px;
+    padding:6px 9px;
+    font-size:11.5px;
+    font-weight:700;
+    color:var(--navy-soft);
+    cursor:pointer;
+  }
+  .feedback-btn:hover{background:#F5F8FA;}
+  .feedback-btn.correct{border-color:#BBD8D3;color:var(--teal);}
+  .reclassify-options{
+    display:none;
+    gap:7px;
+    flex-wrap:wrap;
+    margin-top:10px;
+    padding:10px;
+    background:#FAFBFC;
+    border:1px solid var(--border);
+    border-radius:8px;
+  }
+  .reclassify-options.shown{display:flex;}
+  .reclassify-label{width:100%;font-size:11.5px;color:var(--text-soft);margin-bottom:1px;}
+  .reclassify-choice{
+    border:1px solid var(--border);
+    background:#fff;
+    border-radius:99px;
+    padding:6px 10px;
+    font-size:11.4px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .reclassify-choice[data-priority="urgent"]{color:var(--urgent);border-color:#E8C0AE;}
+  .reclassify-choice[data-priority="normal"]{color:var(--navy-soft);}
+  .reclassify-choice[data-priority="low"]{color:var(--teal);border-color:#CFE4E0;}
+  .learning-confirmation{
+    display:none;
+    margin-top:10px;
+    padding:9px 10px;
+    border-radius:8px;
+    background:#EDF7F4;
+    border:1px solid #CFE4E0;
+    color:#2F675E;
+    font-size:11.7px;
+    line-height:1.45;
+  }
+  .learning-confirmation.shown{display:block;}
+  .agent-simulation-tag{
+    display:inline-flex;
+    align-items:center;
+    margin-left:5px;
+    padding:2px 6px;
+    border-radius:99px;
+    background:#EDF1F5;
+    color:var(--text-faint);
+    font-size:9.5px;
+    font-weight:700;
+    vertical-align:middle;
+  }
+  @media (max-width:1100px){
+    .agent-cycle{grid-template-columns:1fr 1fr;}
+    .agent-step:not(:last-child)::after{display:none;}
+  }
+
+
+
+  /* ---------- Cohérence visuelle du mode concentration ---------- */
+  .app.focus-active .mail-item.is-urgent{
+    background: linear-gradient(90deg, rgba(47,111,104,.18) 0%, rgba(79,142,131,.13) 55%, rgba(111,166,154,.10) 100%);
+    border-left-color:#2F6F68;
+  }
+  .app.focus-active .mail-item.is-urgent:hover,
+  .app.focus-active .mail-item.is-urgent.selected{
+    background: linear-gradient(90deg, rgba(47,111,104,.24) 0%, rgba(79,142,131,.17) 55%, rgba(111,166,154,.13) 100%);
+    box-shadow: inset 3px 0 0 #2F6F68;
+  }
+  .app.focus-active .digest-card.is-urgent{
+    background: linear-gradient(90deg, rgba(47,111,104,.14) 0%, rgba(79,142,131,.10) 55%, rgba(111,166,154,.08) 100%);
+    border-left-color:#2F6F68;
+  }
+  .app.focus-active .badge-urgent{
+    background:#DDEFEA;
+    color:#2F6F68;
+  }
+  .app.focus-active .group-label.urgent,
+  .app.focus-active .digest-group-label.urgent{color:#2F6F68;}
+
+  /* ---------- Deux angles de reformulation ---------- */
+  .reformulation-purpose{
+    display:flex;
+    gap:11px;
+    align-items:flex-start;
+    padding:13px 15px;
+    margin:0 0 16px 0;
+    border:1px solid #CFE4E0;
+    background:var(--teal-bg);
+    border-radius:9px;
+  }
+  .reformulation-purpose-icon{
+    width:30px;height:30px;border-radius:50%;
+    flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    background:#fff;
+    border:1px solid #CFE4E0;
+    color:var(--teal);
+    font-size:14px;
+  }
+  .reformulation-purpose-title{
+    font-size:12.7px;
+    font-weight:750;
+    color:var(--teal);
+    margin-bottom:3px;
+  }
+  .reformulation-purpose-text{
+    font-size:12.2px;
+    line-height:1.5;
+    color:#456862;
+  }
+  .reformulation-module-tag{
+    display:inline-flex;
+    margin-top:7px;
+    padding:3px 7px;
+    border-radius:99px;
+    background:#fff;
+    border:1px solid #CFE4E0;
+    color:#3E7C74;
+    font-size:10.4px;
+    font-weight:700;
+  }
+
 </style>
 </head>
 <body>
+
+<!-- VISITE GUIDÉE -->
+<div class="tour-overlay" id="tourOverlay"></div>
+<div class="tour-card" id="tourCard" role="dialog" aria-live="polite" aria-modal="true">
+  <div class="tour-kicker" id="tourKicker">Visite guidée</div>
+  <div class="tour-title" id="tourTitle"></div>
+  <div class="tour-text" id="tourText"></div>
+  <div class="tour-actions">
+    <div class="tour-progress" id="tourProgress"></div>
+    <div class="tour-buttons">
+      <button class="tour-btn ghost" id="tourSkipBtn">Quitter</button>
+      <button class="tour-btn" id="tourPrevBtn">Précédent</button>
+      <button class="tour-btn primary" id="tourNextBtn">Suivant</button>
+    </div>
+  </div>
+</div>
+<button class="tour-replay" id="tourReplayBtn" type="button">▶ Revoir la visite</button>
+
 
 <div class="focus-banner" id="focusBanner">
   <div class="focus-banner-left">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <b>Mode concentration actif</b>
     <span class="focus-timer" id="focusTimer">30:00</span>
-    <span class="focus-banner-sub" id="focusSub">Seuls les messages urgents s'affichent.</span>
+    <span class="focus-banner-sub" id="focusSub">Temps protégé • seuls les messages urgents s’affichent.</span>
   </div>
   <button class="focus-end-btn" id="focusEndBtn">Terminer</button>
 </div>
@@ -665,19 +1456,29 @@
     <div class="brand">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="5" fill="#fff" fill-opacity="0.15"/><path d="M5 8l7 5 7-5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="5" y="6" width="14" height="12" rx="2" stroke="#fff" stroke-width="1.6"/></svg>
       <div>
-        <div class="brand-main">URGENTIA</div>
-        <div class="brand-sub">@ Quiet Feed Company</div>
+        <div class="brand-main">QUIETFEED AI</div>
+        <div class="brand-sub">Agent de messagerie intelligent</div>
       </div>
     </div>
     <div class="mit-badge">
-      <div class="mit-mark">MIT</div>
-      <span>Student Project 2026/2027</span>
+      <a class="mit-official-link"
+         href="https://www.mit.edu/"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="Massachusetts Institute of Technology">
+        <img
+          class="mit-official-logo"
+          src="https://brand.mit.edu/sites/default/files/2023-08/MIT-lockup-3-line-download_0.png"
+          alt="Massachusetts Institute of Technology">
+      </a>
+      <span class="mit-project-label">Student Project 2026/2027</span>
     </div>
     <button class="compose-btn">+ Nouveau message</button>
 
     <div class="nav-section-label">Affichage</div>
     <div class="nav-item view-item active" data-view="detail"><span>Vue détaillée</span></div>
     <div class="nav-item view-item" data-view="digest"><span>Vue résumés</span></div>
+    <div class="nav-item view-item" data-view="impact"><span>Mon impact</span><span class="nav-count">KPI</span></div>
 
     <div class="nav-section-label">Dossiers</div>
     <div class="nav-item folder-item active" data-folder="inbox"><span>Boîte de réception</span><span class="nav-count">4</span></div>
@@ -736,6 +1537,130 @@
       <p>Tous vos messages, réduits à l'essentiel, les uns à la suite des autres.</p>
     </div>
     <div class="digest-scroll" id="digestList"></div>
+  </div>
+
+
+  <!-- IMPACT / KPI VIEW -->
+  <div class="impact-pane" id="impactPane">
+    <div class="impact-wrap">
+      <div class="impact-header">
+        <div>
+          <h1>Mon impact QuietFeed</h1>
+          <p>Temps protégé, interruptions évitées et ressenti utilisateur — pour mesurer une performance plus sereine.</p>
+        </div>
+        <div class="demo-pill">Données simulées • prototype</div>
+      </div>
+
+      <div class="impact-hero">
+        <div>
+          <div class="impact-hero-label">Temps de concentration récupéré aujourd’hui</div>
+          <div class="impact-hero-value">1 h 26</div>
+          <div class="impact-hero-sub">Du temps rendu au travail de fond plutôt qu’aux interruptions. Cette valeur est illustrative pour la démonstration.</div>
+        </div>
+        <div class="impact-hero-target">
+          <div class="impact-target-title">Hypothèse du projet</div>
+          <div class="impact-target-value">1 à 2 h / jour</div>
+          <div class="impact-target-note">Ordre de grandeur à valider pendant le pilote, en mesurant les interruptions réellement évitées.</div>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon">↗</div>
+          <div class="kpi-value">28</div>
+          <div class="kpi-label">Interruptions évitées</div>
+          <div class="kpi-note">Scénario de démonstration sur la journée.</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">⏸</div>
+          <div class="kpi-value">79 %</div>
+          <div class="kpi-label">Messages non pertinents différés</div>
+          <div class="kpi-note"><span class="kpi-good">Dans la cible pilote</span> : 70 à 85 %.</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">✓</div>
+          <div class="kpi-value">99,1 %</div>
+          <div class="kpi-label">Messages critiques laissés passer</div>
+          <div class="kpi-note"><span class="kpi-good">Au-dessus de l’objectif</span> : 98 % minimum.</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">◔</div>
+          <div class="kpi-value">4,3 / 5</div>
+          <div class="kpi-label">Satisfaction & sérénité</div>
+          <div class="kpi-note">Check-in volontaire de démonstration. Objectif projet : ≥ 4/5.</div>
+        </div>
+      </div>
+
+      <div class="impact-columns">
+        <div class="impact-panel">
+          <h2>Temps récupéré cette semaine</h2>
+          <div class="panel-sub">Illustration du reporting individuel — minutes de concentration protégée.</div>
+          <div class="week-chart">
+            <div class="day-col"><div class="bar-wrap"><div class="time-bar" style="--h:58%;" data-value="1h12"></div></div>Lun</div>
+            <div class="day-col"><div class="bar-wrap"><div class="time-bar" style="--h:67%;" data-value="1h23"></div></div>Mar</div>
+            <div class="day-col"><div class="bar-wrap"><div class="time-bar" style="--h:77%;" data-value="1h36"></div></div>Mer</div>
+            <div class="day-col"><div class="bar-wrap"><div class="time-bar" style="--h:71%;" data-value="1h28"></div></div>Jeu</div>
+            <div class="day-col"><div class="bar-wrap"><div class="time-bar" style="--h:73%;" data-value="1h31"></div></div>Ven</div>
+          </div>
+          <div class="week-total"><span>Total semaine : <b>7 h 10</b></span><span>Objectif personnel : <b>≥ 5 h</b></span></div>
+        </div>
+
+        <div class="impact-panel">
+          <h2>Bien-être numérique</h2>
+          <div class="panel-sub">Un indicateur de ressenti, pas une note de performance.</div>
+          <div class="wellbeing-score">
+            <div class="wellbeing-ring"></div>
+            <div class="wellbeing-copy">
+              <strong>Moins d’interruptions, plus de maîtrise</strong>
+              <span>« Aujourd’hui, j’ai pu avancer sans surveiller ma boîte en permanence. »</span>
+            </div>
+          </div>
+          <div class="privacy-note">🔒 Le ressenti est personnel et volontaire. Il sert à mesurer le service rendu et n’est jamais utilisé pour noter individuellement un collaborateur.</div>
+        </div>
+      </div>
+
+      <div class="impact-panel badges-panel">
+        <h2>Badges de challenge personnel</h2>
+        <div class="panel-sub">Des encouragements individuels, sans classement entre collègues.</div>
+        <div class="badge-challenges">
+          <div class="challenge-badge unlocked">
+            <div class="challenge-icon">🧘</div>
+            <div class="challenge-name">Focus 30</div>
+            <div class="challenge-desc">3 sessions de concentration d’au moins 30 minutes.</div>
+          </div>
+          <div class="challenge-badge unlocked">
+            <div class="challenge-icon">🌿</div>
+            <div class="challenge-name">Journée sereine</div>
+            <div class="challenge-desc">Une journée avec un ressenti de sérénité ≥ 4/5.</div>
+          </div>
+          <div class="challenge-badge unlocked">
+            <div class="challenge-icon">🛡️</div>
+            <div class="challenge-name">Priorités protégées</div>
+            <div class="challenge-desc">Aucun message critique manqué pendant les plages de focus.</div>
+          </div>
+          <div class="challenge-badge">
+            <div class="challenge-icon">🌱</div>
+            <div class="challenge-name">Semaine déconnectée</div>
+            <div class="challenge-desc">Prochain objectif : 5 jours avec au moins 60 min de temps protégé.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reference-strip">
+        <div class="reference-item">
+          <div class="reference-value">117 e-mails / jour</div>
+          <div class="reference-label">Point de départ retenu dans le projet pour illustrer la surcharge informationnelle.</div>
+        </div>
+        <div class="reference-item">
+          <div class="reference-value">1 interruption / 12 min</div>
+          <div class="reference-label">Le flux actuel fragmente le travail et multiplie les changements de contexte.</div>
+        </div>
+        <div class="reference-item">
+          <div class="reference-value">5 à 7 min</div>
+          <div class="reference-label">Temps de reconcentration retenu dans le projet après une interruption.</div>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -887,9 +1812,12 @@ const sentMails = [
     address: "marc.delattre@monentreprise.fr",
     subject: "Retard sur la livraison du lot 3",
     time: "Envoyé aujourd'hui à 09:40",
-    badgeLabel: "Ton à revoir",
+    badgeLabel: "Reformulation relationnelle",
+    reformulationTheme: "Désamorcer le ton et créer un temps de recul",
+    reformulationBenefit: "Une formulation agressive ou maladroite peut augmenter le stress et tendre la relation. La suggestion aide à préserver le fond du message tout en donnant à l’expéditeur un moment pour relire son intention, prendre du recul et éviter une escalade inutile.",
+    reformulationTag: "Bien-être & qualité relationnelle",
     bannerTitle: "Ton potentiellement perçu comme accusateur",
-    bannerText: "Ce message répète plusieurs reproches directs («comme d'habitude», «ce n'est pas sérieux») qui risquent de braquer votre interlocuteur sans faire avancer le problème plus vite. La reformulation ci-dessous garde la même fermeté sur le fond — le retard, l'urgence, la demande de planning — en retirant ce qui relève du reproche personnel.",
+    bannerText: "Ce message répète plusieurs reproches directs («comme d'habitude», «ce n'est pas sérieux») qui peuvent créer du stress, braquer l'interlocuteur et déclencher une escalade. La reformulation conserve la fermeté sur le fond — retard, urgence, planning — mais retire le reproche personnel. Elle offre aussi à l'expéditeur un temps de recul avant de réengager l'échange.",
     original: `Alors là c'est n'importe quoi, comme d'habitude on est encore en retard sur ce lot. Ce n'est pas sérieux de votre part, je vous avais prévenu la semaine dernière que le client ne tolérerait plus aucun écart.
 
 Le lot 3 devait être livré lundi, nous sommes jeudi. J'attends un planning révisé et des excuses claires sur ce qui s'est passé.`,
@@ -906,9 +1834,12 @@ Pourriez-vous m'envoyer un planning révisé et m'expliquer ce qui a causé ce d
     address: "arjun.mehta@partenaire-inde.com",
     subject: "Report delay — need this today",
     time: "Envoyé aujourd'hui à 14:20",
-    badgeLabel: "Ton à revoir",
+    badgeLabel: "Reformulation interculturelle",
+    reformulationTheme: "Adapter la forme au contexte interculturel",
+    reformulationBenefit: "QuietFeed ne change pas le fond du message : il attire l’attention sur un possible écart de codes de communication et propose une formulation plus adaptée au contexte. L’utilisateur conserve la décision finale et les recommandations restent des tendances, jamais des règles absolues.",
+    reformulationTag: "Module MIT • Communication interculturelle",
     bannerTitle: "Formulation en décalage avec les usages d'affaires en Inde",
-    bannerText: "Ce message va droit au but, sans formule d'ouverture ni reconnaissance du travail déjà fourni. Dans les échanges professionnels en Inde, le ton privilégie en général la courtoisie, une entrée en matière plus chaleureuse et une façon plus indirecte de formuler une critique ou une urgence — l'aller-droit-au-but à l'anglo-saxonne peut y être perçu comme cassant, même sans mauvaise intention. Ce sont des tendances générales, pas une règle universelle : elles varient selon les personnes, les entreprises et les régions.",
+    bannerText: "Cet exemple fait écho au module MIT sur la communication interculturelle. Le message va droit au but, sans formule d'ouverture ni reconnaissance du travail déjà fourni. Dans certains contextes professionnels en Inde, davantage de courtoisie et une formulation plus indirecte peuvent être mieux reçues. QuietFeed présente cela comme une tendance culturelle à considérer — jamais comme une règle universelle — afin de réduire les malentendus sans stéréotyper l'interlocuteur.",
     original: `Arjun,
 
 The report is late again. I need it today, no more delays. This is affecting the whole team.
@@ -992,6 +1923,141 @@ function renderList(){
   });
 }
 
+
+
+function getAgentDecisionMeta(m){
+  const current = priorityLabel[m.priority] || m.priority;
+  let rationale = '';
+  let source = 'Règles métier + contexte';
+  let perceive = 'E-mail + agenda + annuaire';
+  let reason = 'Analyse du contexte et des signaux métier';
+  let action = m.priority === 'urgent' ? 'Notifier maintenant' : (m.priority === 'normal' ? 'Afficher sans interruption' : 'Différer silencieusement');
+
+  if(m.id === 1){
+    rationale = 'Échéance proche (vendredi) + risque financier explicite + demande d’action : trois signaux convergent vers une priorité urgente.';
+    reason = 'Règle métier : échéance < 48 h + risque financier';
+    source = 'Étage 1 • règle traçable';
+  } else if(m.id === 3){
+    rationale = 'Validation attendue avant vendredi 17 h : l’agent détecte une échéance explicite et une action requise.';
+    reason = 'Règle métier : échéance explicite + validation requise';
+    source = 'Étage 1 • règle traçable';
+  } else if(m.id === 2){
+    rationale = 'Le message comporte un enjeu RH mais aucune action immédiate ni échéance critique : il reste à traiter sans notification urgente.';
+    reason = 'Contexte RH + absence d’échéance critique';
+    source = 'Étage 1 + analyse de contenu';
+  } else if(m.id === 5){
+    rationale = 'Retour positif, sans échéance ni action demandée : l’agent le conserve visible mais à faible priorité.';
+    reason = 'Absence d’action et d’échéance';
+    source = 'Étage 1 • règle traçable';
+  } else {
+    rationale = 'Information administrative sans action requise : le message peut être différé sans risque opérationnel identifié.';
+    reason = 'Aucune action requise + traitement automatique prévu';
+    source = 'Étage 1 • règle traçable';
+  }
+
+  if(m.userCorrected){
+    rationale = `Classement corrigé par l’utilisateur vers « ${current} ». Ce retour humain devient un exemple de référence pour les cas similaires.`;
+    reason = 'Correction humaine prioritaire sur la décision initiale';
+    source = 'Boucle d’apprentissage • simulation';
+    action = m.priority === 'urgent' ? 'Notifier maintenant' : (m.priority === 'normal' ? 'Afficher sans interruption' : 'Différer silencieusement');
+  }
+
+  return { current, rationale, source, perceive, reason, action };
+}
+
+function buildAgentDecisionHtml(m){
+  const a = getAgentDecisionMeta(m);
+  return `
+    <div class="agent-decision-card" id="agentDecisionCard">
+      <div class="agent-decision-head">
+        <div class="agent-decision-brand">
+          <div class="agent-orb">AI</div>
+          <div>
+            <div class="agent-decision-title">Décision de l’agent QuietFeed <span class="agent-simulation-tag">DÉMO</span></div>
+            <div class="agent-decision-sub">Décision actuelle : <b>${a.current}</b> • ${a.source}</div>
+          </div>
+        </div>
+        <button class="agent-explain-btn" id="agentExplainBtn" type="button">Pourquoi cette décision ?</button>
+      </div>
+      <div class="agent-decision-details" id="agentDecisionDetails">
+        <div class="agent-rationale"><span>◎</span><div><b>Justification lisible :</b> ${a.rationale}</div></div>
+        <div class="agent-cycle" id="agentCycle">
+          <div class="agent-step"><div class="agent-step-label">1 • Percevoir</div><div class="agent-step-value">${a.perceive}</div></div>
+          <div class="agent-step"><div class="agent-step-label">2 • Raisonner</div><div class="agent-step-value">${a.reason}</div></div>
+          <div class="agent-step"><div class="agent-step-label">3 • Décider</div><div class="agent-step-value">${a.current}</div></div>
+          <div class="agent-step"><div class="agent-step-label">4 • Agir</div><div class="agent-step-value">${a.action}</div></div>
+          <div class="agent-step"><div class="agent-step-label">5 • Apprendre</div><div class="agent-step-value">Feedback humain → exemple de référence</div></div>
+        </div>
+        <div class="agent-guardrail" id="agentGuardrail"><span>🛡</span><div><strong>Autonomie contrôlée.</strong> QuietFeed peut classer, différer et notifier. Il ne supprime aucun message et aucune action irréversible ou envoi n’est réalisé sans validation humaine.</div></div>
+        <div class="agent-feedback" id="agentFeedbackBlock">
+          <div class="agent-feedback-question">
+            <div class="agent-feedback-copy"><strong>Ce classement est-il correct ?</strong><span>Votre retour ferme la boucle d’apprentissage de l’agent.</span></div>
+            <div class="agent-feedback-actions">
+              <button class="feedback-btn correct" id="agentCorrectBtn" type="button">✓ Correct</button>
+              <button class="feedback-btn" id="agentReclassifyBtn" type="button">Reclasser</button>
+            </div>
+          </div>
+          <div class="reclassify-options" id="reclassifyOptions">
+            <div class="reclassify-label">Quel niveau aurait dû être attribué ?</div>
+            <button class="reclassify-choice" data-priority="urgent" type="button">⚡ Urgent</button>
+            <button class="reclassify-choice" data-priority="normal" type="button">À traiter</button>
+            <button class="reclassify-choice" data-priority="low" type="button">Faible priorité</button>
+          </div>
+          <div class="learning-confirmation" id="learningConfirmation"></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function attachAgentDecisionEvents(m){
+  const explain = document.getElementById('agentExplainBtn');
+  const details = document.getElementById('agentDecisionDetails');
+  const correct = document.getElementById('agentCorrectBtn');
+  const reclassify = document.getElementById('agentReclassifyBtn');
+  const options = document.getElementById('reclassifyOptions');
+  const confirmation = document.getElementById('learningConfirmation');
+  if(!explain || !details) return;
+
+  explain.addEventListener('click', ()=>{
+    details.classList.toggle('shown');
+    explain.textContent = details.classList.contains('shown') ? 'Masquer l’explication' : 'Pourquoi cette décision ?';
+  });
+
+  correct.addEventListener('click', ()=>{
+    confirmation.innerHTML = '✓ <b>Feedback enregistré.</b> Dans la solution cible, cette validation renforcerait la confiance dans les règles existantes. <b>Ici, il s’agit d’une simulation de prototype.</b>';
+    confirmation.classList.add('shown');
+    options.classList.remove('shown');
+  });
+
+  reclassify.addEventListener('click', ()=>{
+    options.classList.toggle('shown');
+    confirmation.classList.remove('shown');
+  });
+
+  options.querySelectorAll('.reclassify-choice').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const newPriority = btn.dataset.priority;
+      m.priority = newPriority;
+      m.userCorrected = true;
+      renderList();
+      renderDigest();
+      renderReading(m.id);
+      document.querySelectorAll('.mail-item').forEach(x=>x.classList.remove('selected'));
+      const selected = document.querySelector(`.mail-item[data-id="${m.id}"]`);
+      if(selected) selected.classList.add('selected');
+      const newDetails = document.getElementById('agentDecisionDetails');
+      const newExplain = document.getElementById('agentExplainBtn');
+      const newConfirmation = document.getElementById('learningConfirmation');
+      if(newDetails) newDetails.classList.add('shown');
+      if(newExplain) newExplain.textContent = 'Masquer l’explication';
+      if(newConfirmation){
+        newConfirmation.innerHTML = `↻ <b>Correction humaine prise en compte :</b> le message est maintenant classé « ${priorityLabel[newPriority]} ». Dans la solution cible, le cas corrigé rejoindrait la base d’exemples et serait revu s’il devient récurrent. <b>Simulation du prototype.</b>`;
+        newConfirmation.classList.add('shown');
+      }
+    });
+  });
+}
+
 function renderReading(id){
   const m = mails.find(x=>x.id===id);
   let banner = '';
@@ -1058,6 +2124,8 @@ function renderReading(id){
 
     ${priorityLine}
 
+    ${buildAgentDecisionHtml(m)}
+
     <div class="essential-card">
       <div class="essential-card-head">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/></svg>
@@ -1078,6 +2146,8 @@ function renderReading(id){
 
     <div class="full-body" id="fullBody">${m.full}</div>
   `;
+
+  attachAgentDecisionEvents(m);
 
   document.getElementById('expandBtn').addEventListener('click', function(){
     const fb = document.getElementById('fullBody');
@@ -1147,6 +2217,7 @@ function switchView(view){
   document.getElementById('listPane').style.display = view==='detail' ? 'flex' : 'none';
   document.getElementById('readingPane').style.display = view==='detail' ? 'block' : 'none';
   document.getElementById('digestPane').style.display = view==='digest' ? 'flex' : 'none';
+  document.getElementById('impactPane').style.display = view==='impact' ? 'block' : 'none';
 }
 
 document.querySelectorAll('.view-item').forEach(el=>{
@@ -1187,6 +2258,8 @@ function formatTime(totalSeconds){
 
 function startFocusMode(){
   focusModeActive = true;
+  const appEl = document.querySelector('.app');
+  if(appEl) appEl.classList.add('focus-active');
   focusSecondsLeft = parseInt(focusSlider.value) * 60;
   focusTimerEl.textContent = formatTime(focusSecondsLeft);
   focusBanner.classList.add('shown');
@@ -1208,6 +2281,8 @@ function startFocusMode(){
 
 function stopFocusMode(){
   focusModeActive = false;
+  const appEl = document.querySelector('.app');
+  if(appEl) appEl.classList.remove('focus-active');
   clearInterval(focusIntervalId);
   focusBanner.classList.remove('shown');
   focusToggleBtn.textContent = "Démarrer " + focusSlider.value + " min de concentration";
@@ -1267,6 +2342,15 @@ function renderSentReading(id){
       </div>
     </div>
 
+    <div class="reformulation-purpose" id="reformulationPurpose">
+      <div class="reformulation-purpose-icon">↺</div>
+      <div>
+        <div class="reformulation-purpose-title">${m.reformulationTheme || 'Objectif de la reformulation'}</div>
+        <div class="reformulation-purpose-text">${m.reformulationBenefit || ''}</div>
+        ${m.reformulationTag ? `<span class="reformulation-module-tag">${m.reformulationTag}</span>` : ''}
+      </div>
+    </div>
+
     <div class="banner banner-caution">
       <div class="banner-icon caution">
         <svg class="flag-icon-small" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
@@ -1310,6 +2394,283 @@ document.querySelectorAll('.folder-item').forEach(el=>{
 renderList();
 renderReading(5);
 renderDigest();
+
+
+// ---------- Visite guidée autonome ----------
+const tourOverlay = document.getElementById('tourOverlay');
+const tourCard = document.getElementById('tourCard');
+const tourTitle = document.getElementById('tourTitle');
+const tourText = document.getElementById('tourText');
+const tourProgress = document.getElementById('tourProgress');
+const tourPrevBtn = document.getElementById('tourPrevBtn');
+const tourNextBtn = document.getElementById('tourNextBtn');
+const tourSkipBtn = document.getElementById('tourSkipBtn');
+const tourReplayBtn = document.getElementById('tourReplayBtn');
+
+let tourIndex = 0;
+let tourActive = false;
+let tourTarget = null;
+
+function openInboxForTour(mailId = 1){
+  document.querySelectorAll('.folder-item').forEach(x=>x.classList.remove('active'));
+  const inbox = document.querySelector('.folder-item[data-folder="inbox"]');
+  if(inbox) inbox.classList.add('active');
+  document.getElementById('listHeaderTitle').textContent = 'Boîte de réception';
+  switchView('detail');
+  if(focusModeActive) stopFocusMode();
+  renderList();
+  renderReading(mailId);
+  document.querySelectorAll('.mail-item').forEach(x=>x.classList.remove('selected'));
+  const target = document.querySelector(`.mail-item[data-id="${mailId}"]`);
+  if(target) target.classList.add('selected');
+}
+
+function openSentForTour(sentId = 101){
+  document.querySelectorAll('.folder-item').forEach(x=>x.classList.remove('active'));
+  const sent = document.querySelector('.folder-item[data-folder="sent"]');
+  if(sent) sent.classList.add('active');
+  document.getElementById('listHeaderTitle').textContent = 'Envoyés';
+  switchView('detail');
+  renderSentList(sentId);
+  renderSentReading(sentId);
+}
+
+const tourSteps = [
+  {
+    title: "Bonjour Professeure Pham",
+    text: "Bienvenue dans QuietFeed AI, notre prototype d’agent de messagerie. Cette courte visite montre comment l’agent protège la concentration, priorise les messages, explique ses décisions et apprend grâce au retour humain.",
+    target: null
+  },
+  {
+    title: "1. Un objectif avant toute action",
+    text: "L’objectif de QuietFeed est simple : protéger la concentration sans laisser passer une urgence. L’agent ne se contente donc pas de résumer un e-mail ; il choisit comment le traiter selon le contexte.",
+    target: '.mail-item[data-id="1"]',
+    prepare: ()=>openInboxForTour(1)
+  },
+  {
+    title: "2. Pourquoi l’agent a-t-il décidé ‘Urgent’ ?",
+    text: "La décision est explicable. Ici, l’échéance proche, le risque financier et la demande d’action déclenchent une règle métier traçable.",
+    target: '#agentDecisionCard',
+    prepare: ()=>{
+      openInboxForTour(1);
+      setTimeout(()=>{
+        const d=document.getElementById('agentDecisionDetails');
+        const b=document.getElementById('agentExplainBtn');
+        if(d) d.classList.add('shown');
+        if(b) b.textContent='Masquer l’explication';
+      },10);
+    }
+  },
+  {
+    title: "3. Le cycle agentique devient visible",
+    text: "Percevoir → raisonner → décider → agir → apprendre. QuietFeed combine le message, le contexte et des règles métier pour choisir une action, avec une trace explicable et contrôlable.",
+    target: '#agentCycle',
+    prepare: ()=>{
+      openInboxForTour(1);
+      setTimeout(()=>{ const d=document.getElementById('agentDecisionDetails'); if(d) d.classList.add('shown'); },10);
+    }
+  },
+  {
+    title: "4. L’humain ferme la boucle d’apprentissage",
+    text: "L’utilisateur peut valider le classement ou le corriger. Dans la solution cible, un cas corrigé rejoint la base d’exemples et les erreurs récurrentes peuvent devenir de nouvelles règles.",
+    target: '#agentFeedbackBlock',
+    prepare: ()=>{
+      openInboxForTour(1);
+      setTimeout(()=>{ const d=document.getElementById('agentDecisionDetails'); if(d) d.classList.add('shown'); },10);
+    }
+  },
+  {
+    title: "5. Une autonomie volontairement limitée",
+    text: "L’agent peut classer, différer et notifier, mais il ne supprime rien et n’exécute aucune action irréversible sans validation humaine. L’autonomie reste utile, traçable et réversible.",
+    target: '#agentGuardrail',
+    prepare: ()=>{
+      openInboxForTour(1);
+      setTimeout(()=>{ const d=document.getElementById('agentDecisionDetails'); if(d) d.classList.add('shown'); },10);
+    }
+  },
+  {
+    title: "6. L’essentiel sans relire tout l’e-mail",
+    text: "Chaque message est condensé en trois points clés. L’utilisateur comprend la situation et l’action attendue en quelques secondes, tout en gardant l’accès au message complet.",
+    target: '#readingPane .essential-card',
+    prepare: ()=>openInboxForTour(1)
+  },
+  {
+    title: "7. Repérer un ton qui peut créer de la tension",
+    text: "QuietFeed signale un ton agressif, maladroit ou potentiellement problématique. L’objectif n’est pas de censurer : il s’agit de rendre visible un risque de stress, de conflit ou de malentendu avant qu’il ne s’installe.",
+    target: '#readingPane .banner-caution',
+    prepare: ()=>openInboxForTour(1)
+  },
+  {
+    title: "8. Le mode concentration protège le travail de fond",
+    text: "Pendant une durée choisie, seuls les messages urgents restent visibles et notifiables. Ils reprennent la même palette apaisante que la barre supérieure ; les autres attendent sans interrompre l’utilisateur.",
+    target: '.focus-block',
+    prepare: ()=>openInboxForTour(1)
+  },
+  {
+    title: "9. Reformuler pour réduire le stress et prendre du recul",
+    text: "Premier angle : une formulation agressive ou maladroite peut alimenter le stress entre collègues. QuietFeed propose une alternative plus constructive, sans affaiblir le fond. La suggestion donne aussi à l’expéditeur un temps de recul pour relire son intention avant de poursuivre l’échange.",
+    target: '#reformulationPurpose',
+    prepare: ()=>openSentForTour(102)
+  },
+  {
+    title: "10. Reformuler avec une sensibilité interculturelle",
+    text: "Deuxième angle : cet exemple fait directement écho au module MIT sur la communication interculturelle. QuietFeed signale un possible écart de codes et propose une formulation adaptée, présentée comme une tendance à considérer et jamais comme une règle culturelle absolue.",
+    target: '#reformulationPurpose',
+    prepare: ()=>openSentForTour(101)
+  },
+  {
+    title: "11. Une vue résumée pour parcourir la boîte",
+    text: "La vue résumés regroupe les messages sous forme de cartes courtes. Les priorités et alertes restent visibles sans ouvrir chaque e-mail.",
+    target: '#digestPane .digest-header',
+    prepare: ()=>{
+      document.querySelectorAll('.folder-item').forEach(x=>x.classList.remove('active'));
+      const inbox = document.querySelector('.folder-item[data-folder="inbox"]');
+      if(inbox) inbox.classList.add('active');
+      document.getElementById('listHeaderTitle').textContent = 'Boîte de réception';
+      if(focusModeActive) stopFocusMode();
+      renderList();
+      renderDigest();
+      switchView('digest');
+    }
+  },
+  {
+    title: "12. Mesurer la valeur créée",
+    text: "Le reporting met l’accent sur le temps de concentration récupéré, les interruptions évitées, la qualité du filtrage et le ressenti de sérénité. Les valeurs visibles ici sont simulées ; les cibles devront être validées pendant le pilote.",
+    target: '#impactPane .impact-hero',
+    prepare: ()=>switchView('impact')
+  },
+  {
+    title: "À vous de tester",
+    text: "La visite est terminée. Vous pouvez maintenant ouvrir un e-mail, afficher ‘Pourquoi cette décision ?’, reclasser une priorité, tester le mode concentration, comparer les deux types de reformulation et explorer le reporting ‘Mon impact’.",
+    target: null
+  }
+];
+
+function clearTourHighlight(){
+  if(tourTarget){
+    tourTarget.classList.remove('tour-highlight');
+    tourTarget = null;
+  }
+}
+
+function positionTourCard(target){
+  tourCard.classList.remove('centered');
+  tourCard.removeAttribute('data-placement');
+
+  if(!target){
+    tourCard.classList.add('centered');
+    tourCard.style.left = '';
+    tourCard.style.top = '';
+    tourCard.style.right = '';
+    tourCard.style.bottom = '';
+    return;
+  }
+
+  const gap = 18;
+  const margin = 16;
+  const rect = target.getBoundingClientRect();
+
+  tourCard.style.visibility = 'hidden';
+  tourCard.style.display = 'block';
+  const cardRect = tourCard.getBoundingClientRect();
+  tourCard.style.visibility = '';
+  tourCard.style.display = '';
+
+  let left, top, placement;
+
+  if(rect.right + gap + cardRect.width + margin <= window.innerWidth){
+    left = rect.right + gap;
+    top = Math.max(margin, Math.min(rect.top, window.innerHeight - cardRect.height - margin));
+    placement = 'right';
+  } else if(rect.left - gap - cardRect.width - margin >= 0){
+    left = rect.left - gap - cardRect.width;
+    top = Math.max(margin, Math.min(rect.top, window.innerHeight - cardRect.height - margin));
+    placement = 'left';
+  } else if(rect.bottom + gap + cardRect.height + margin <= window.innerHeight){
+    left = Math.max(margin, Math.min(rect.left, window.innerWidth - cardRect.width - margin));
+    top = rect.bottom + gap;
+    placement = 'bottom';
+  } else {
+    left = Math.max(margin, Math.min(rect.left, window.innerWidth - cardRect.width - margin));
+    top = Math.max(margin, rect.top - gap - cardRect.height);
+    placement = 'top';
+  }
+
+  tourCard.style.left = left + 'px';
+  tourCard.style.top = top + 'px';
+  tourCard.style.right = 'auto';
+  tourCard.style.bottom = 'auto';
+  tourCard.setAttribute('data-placement', placement);
+}
+
+function showTourStep(index){
+  if(!tourActive) return;
+  tourIndex = Math.max(0, Math.min(index, tourSteps.length - 1));
+  const step = tourSteps[tourIndex];
+
+  clearTourHighlight();
+  if(step.prepare) step.prepare();
+
+  setTimeout(()=>{
+    tourTitle.textContent = step.title;
+    tourText.textContent = step.text;
+    tourProgress.textContent = `${tourIndex + 1} / ${tourSteps.length}`;
+    tourPrevBtn.style.visibility = tourIndex === 0 ? 'hidden' : 'visible';
+    tourNextBtn.textContent = tourIndex === tourSteps.length - 1 ? 'Terminer' : 'Suivant';
+
+    tourTarget = step.target ? document.querySelector(step.target) : null;
+    if(tourTarget){
+      tourTarget.classList.add('tour-highlight');
+      tourTarget.scrollIntoView({behavior:'smooth', block:'center', inline:'nearest'});
+    }
+
+    tourOverlay.classList.add('shown');
+    tourCard.classList.add('shown');
+
+    setTimeout(()=>positionTourCard(tourTarget), 180);
+  }, 40);
+}
+
+function startTour(){
+  tourActive = true;
+  tourIndex = 0;
+  document.body.style.overflow = 'hidden';
+  showTourStep(0);
+}
+
+function endTour(){
+  clearTourHighlight();
+  tourActive = false;
+  tourOverlay.classList.remove('shown');
+  tourCard.classList.remove('shown');
+  document.body.style.overflow = '';
+  try{ localStorage.setItem('quietfeedTourSeenV4', '1'); }catch(e){}
+  openInboxForTour(5);
+}
+
+tourNextBtn.addEventListener('click', ()=>{
+  if(tourIndex >= tourSteps.length - 1){
+    endTour();
+  } else {
+    showTourStep(tourIndex + 1);
+  }
+});
+
+tourPrevBtn.addEventListener('click', ()=>showTourStep(tourIndex - 1));
+tourSkipBtn.addEventListener('click', endTour);
+tourReplayBtn.addEventListener('click', startTour);
+
+window.addEventListener('resize', ()=>{
+  if(tourActive) positionTourCard(tourTarget);
+});
+
+// Lancement automatique lors de la première visite dans ce navigateur.
+setTimeout(()=>{
+  let alreadySeen = false;
+  try{ alreadySeen = localStorage.getItem('quietfeedTourSeenV4') === '1'; }catch(e){}
+  if(!alreadySeen) startTour();
+}, 700);
+
 </script>
 
 </body>
